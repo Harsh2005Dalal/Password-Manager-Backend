@@ -11,27 +11,24 @@ const app = express();
 
 let isConnected = false;
 
-app.use((req,res,next) => {
-  if(!isConnected)
-  {
-    connectDB();
+// Fix the database connection middleware
+app.use(async (req, res, next) => {
+  if (!isConnected) {
+    await connectDB();
+    isConnected = true;
   }
-  else
-  {
-    next();
-  }
+  next(); // This was missing!
 });
 
-
+// Fix the CORS origin - remove trailing slash
 app.use(cors({
-  origin: ['http://localhost:3000', 'https://password-manager-frontend-mu.vercel.app/'], // Add your frontend URLs
+  origin: ['http://localhost:3000', 'https://password-manager-frontend-mu.vercel.app'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json());
-
 
 app.use('/api/auth', authRoutes);
 app.use('/api/passwords', passwordRoutes);
@@ -41,9 +38,5 @@ app.get('/', (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
-
-// app.listen(PORT, () => {
-//   console.log(`Server running on port ${PORT}`);
-// });
 
 export default app;
