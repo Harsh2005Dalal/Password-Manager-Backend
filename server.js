@@ -23,7 +23,13 @@ app.use((req,res,next) => {
 });
 
 
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:3000', 'https://password-manager-frontend-mu.vercel.app/'], // Add your frontend URLs
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(express.json());
 
 
